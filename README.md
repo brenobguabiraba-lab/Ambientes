@@ -66,6 +66,7 @@ group by pedido_idpedido)
 as sub;
 
 #Juncao----------------------------------------------------------------------------
+
 #Crie uma consulta que retorne o nome do cliente e a descrição do status do pedido
 #para todos os pedidos realizados. A consulta deve incluir apenas os pedidos que
 #têm status definido.
@@ -73,6 +74,57 @@ select c.nome, s.descricao as status_pedido
 from pedido p
 inner join cliente c on p.idcliente = c.idcliente
 inner join status_pedido s on p.idstatus = s.idstatus;
+
+#Faça uma consulta que liste todos os produtos junto com o nome da categoria a que
+#pertencem. Inclua produtos que não estejam associados a nenhuma categoria.
+select p.nome as produto, c.descricao as categoria
+from produto p
+left join categoria c on p.categoria_idcategoria = c.idcategoria;
+
+#Elabore uma consulta que mostre todos os tipos de cliente e seus respectivos
+#clientes. Mesmo que um tipo de cliente não tenha clientes associados, ele deve aparecer.
+select t.descricao as tipo_cliente, c.nome
+from tipo_cliente t
+left join cliente c on c.idtipo_cliente = t.idtipo_cliente;
+
+#Crie uma consulta que retorne todas as combinações possíveis entre clientes e tipos
+#de endereço. A consulta deve incluir todos os clientes e todos os tipos de endereço,
+#mesmo que não haja correspondência.
+select c.nome, te.descricao as tipo_endereco
+from cliente c
+cross join tipo_endereco te;
+
+#Crie uma consulta que traga o nome do cliente, o produto que ele comprou e a
+#quantidade comprada, considerando apenas os pedidos que têm produtos associados.
+select c.nome as cliente, p.nome as produto, php.quantidade
+from pedido_has_produto php
+inner join pedido pe on php.pedido_idpedido = pe.idpedido
+inner join cliente c on pe.idcliente = c.idcliente
+inner join produto p on php.produto_idproduto = p.idproduto;
+
+#Construa uma consulta que retorne todos os endereços de clientes, juntamente com o
+#nome do cliente, mas apenas para aqueles endereços que são padrão. Inclua também os
+#clientes que não têm endereços.
+select c.nome, e.endereco
+from cliente c
+left join endereco e 
+on c.idcliente = e.idcliente and e.padrao = 1;
+
+#Faça uma consulta que retorne a quantidade total de produtos vendidos por cada
+#produto, mesmo que alguns produtos não tenham sido vendidos. Mostre o nome do
+#produto e a quantidade vendida.
+select p.nome as produto, coalesce(sum(php.quantidade),0) as total_vendido
+from produto p
+left join pedido_has_produto php on p.idproduto = php.produto_idproduto
+group by p.idproduto, p.nome;
+
+#Crie uma consulta que mostre todos os pedidos realizados por um cliente específico
+#(por exemplo, idcliente = 1), incluindo o nome do cliente, a data do pedido e o
+#valor total do pedido.
+select c.nome, p.data_pedido, p.valor_total
+from pedido p
+inner join cliente c on p.idcliente = c.idcliente
+where c.idcliente = 1;
 
 #Agregacao e Juncao-------------------------------------------------------------
 
